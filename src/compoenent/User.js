@@ -1,60 +1,18 @@
-import React, { seEffect, useEffect, useReducer } from "react";
+import React from "react";
 import axios from "axios";
-import { async_reducer } from "./async_reducer";
+// import { async_reducer } from "./async_reducer";
+import useAsync from "../useAsync";
 
-// function reducer(state, action) {
-//   // LOADING, SUCCESS, ERROR
-
-//   console.log("stat 01 " + state);
-
-//   switch (action.type) {
-//     case "LOADING":
-//       return {
-//         loading: true,
-//         data: null,
-//         error: null,
-//       };
-//     case "SUCCESS":
-//       return {
-//         loading: false,
-//         data: action.data,
-//         error: null,
-//       };
-//     case "ERROR":
-//       return {
-//         loading: false,
-//         data: null,
-//         error: action.error,
-//       };
-//     default:
-//       return state;
-//   }
-// }
+async function getUsers() {
+  const response = await axios.get(
+    "https://jsonplaceholder.typicode.com/users"
+  );
+  console.log(response.data);
+  return response.data;
+}
 
 function Users() {
-  const [state, dispatch] = useReducer(async_reducer, {
-    loading: false,
-    date: null,
-    error: null,
-  });
-
-  const fetchUsers = async () => {
-    dispatch({ type: "LOADING" });
-    try {
-      const response = await axios.get(
-        "https://jsonplaceholder.typicode.com/users"
-      );
-      dispatch({ type: "SUCCESS", data: response.data });
-    } catch (e) {
-      console.log(e.response.status);
-
-      dispatch({ type: "ERROR", error: e });
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const [state, refetch] = useAsync(getUsers, []);
 
   const { loading, data: users, error } = state;
 
@@ -63,6 +21,7 @@ function Users() {
   if (!users) return null;
 
   console.log(users);
+
   return (
     <>
       <ul>
@@ -72,7 +31,7 @@ function Users() {
           </li>
         ))}
       </ul>
-      <button onClick={fetchUsers}>다시 불러오기</button>
+      <button onClick={refetch}>다시 불러오기</button>
     </>
   );
 }
