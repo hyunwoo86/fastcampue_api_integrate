@@ -1,4 +1,4 @@
-import Users from "./compoenent/User";
+import Users from "./compoenent/Users";
 
 function App() {
   return <Users />;
